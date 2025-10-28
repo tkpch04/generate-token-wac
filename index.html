@@ -3,173 +3,360 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generator Kode Unik - WAC NasDem</title>
+  <title>Generate Token - WAC NasDem</title>
   <style>
-    :root {
-      --blue-dark: #001f5b;
-      --blue-mid: #0a3d91;
-      --gold: #f5b700;
-      --bg: #f2f4f7;
-      --text: #222;
-      --white: #fff;
-      --radius: 14px;
-    }
-    * { box-sizing: border-box; }
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(180deg, var(--blue-dark), var(--blue-mid));
-      margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0b1e4a;
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      color: var(--text);
+      margin: 0;
+      padding: 20px;
     }
-    .container {
-      background: var(--white);
-      padding: 2rem;
-      border-radius: var(--radius);
-      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.25);
-      width: 90%;
-      max-width: 420px;
-      animation: fadeIn 0.5s ease;
+
+    h1 {
+      color: #ffcc00;
+      margin-bottom: 10px;
     }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    h1 { text-align: center; color: var(--blue-dark); font-size: 1.6rem; margin-bottom: 0.5rem; }
-    h2 { text-align: center; font-size: 1rem; color: var(--gold); margin-top: 0; margin-bottom: 1.5rem; }
-    label { font-weight: 600; color: var(--text); display: block; margin-bottom: 0.5rem; }
+
+    p {
+      color: #ccc;
+      margin-top: 0;
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 25px 30px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+      color: #ffcc00;
+    }
+
     input, select {
       width: 100%;
-      padding: 0.7rem;
-      margin-bottom: 1.2rem;
-      border: 1px solid #ccc;
-      border-radius: var(--radius);
-      font-size: 1rem;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
+      font-size: 15px;
     }
+
     button {
       width: 100%;
-      background: var(--blue-dark);
-      color: white;
+      padding: 12px;
+      margin-top: 20px;
+      background: #ffcc00;
       border: none;
-      padding: 0.9rem;
-      border-radius: var(--radius);
-      font-weight: 600;
-      font-size: 1rem;
+      border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
-      transition: all 0.25s ease;
+      color: #0b1e4a;
+      font-size: 16px;
+      transition: all 0.2s ease-in-out;
     }
-    button:hover { background: var(--gold); color: var(--blue-dark); }
+
+    button:hover {
+      background: #ffd633;
+      transform: scale(1.03);
+    }
+
     .result {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-weight: 600;
-      color: var(--blue-dark);
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px;
       word-break: break-word;
-      background: #f7f9fc;
-      padding: 1rem;
-      border-radius: var(--radius);
-      border: 1px dashed var(--gold);
-      display: none;
-    }
-    footer {
-      margin-top: 2rem;
+      color: #fff;
+      font-size: 14px;
       text-align: center;
-      font-size: 0.8rem;
-      color: #f5f5f5;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 13px;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
+  <h1>Generate Token - WAC NasDem</h1>
+  <p>Masukkan nama dan wilayah Anda untuk mendapatkan token akses.</p>
 
-  <div class="container">
-    <h1>Generator Kode Unik</h1>
-    <h2>Relawan WAC - Partai NasDem</h2>
+  <div class="form-container">
+    <label for="nama">Nama:</label>
+    <input type="text" id="nama" placeholder="Masukkan nama lengkap">
 
-    <label for="nama">Nama Kepala</label>
-    <input type="text" id="nama" placeholder="Contoh: Sari" required />
-
-    <label for="kecamatan">Kecamatan</label>
-    <select id="kecamatan">
+    <label for="kelurahan">Kelurahan:</label>
+    <select id="kelurahan">
       <option value="">Memuat data...</option>
     </select>
 
-    <label for="kelurahan">Kelurahan</label>
-    <select id="kelurahan">
-      <option value="">Pilih kecamatan terlebih dahulu</option>
-    </select>
+    <label for="kecamatan">Kecamatan:</label>
+    <input type="text" id="kecamatan" readonly />
 
-    <button id="generateBtn">Generate Kode</button>
-
+    <button id="generateBtn">Generate Token</button>
     <div class="result" id="result"></div>
   </div>
 
-  <footer>© 2025 WAC NasDem • Dibuat dengan semangat perubahan</footer>
+  <footer>© 2025 WAC NasDem - Developed by Timothy Kenneth</footer>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycby6PbpYssMkH_mE9xDhgFu5moPMBPpMuZvYsLi8TWfkGKITKgLIh1VesRZBxxcox1iI/exec";
-    let wilayahData = [];
+    const SHEETS_API_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec"; // ganti pake URL script.gs publish-an kamu
 
-    // ambil data wilayah
-    async function loadWilayah() {
-      const res = await fetch(scriptURL);
-      wilayahData = await res.json();
+    async function loadKelurahan() {
+      const kelurahanSelect = document.getElementById("kelurahan");
+      kelurahanSelect.innerHTML = `<option>Memuat data...</option>`;
 
-      const kecamatanSet = [...new Set(wilayahData.map(w => w.kecamatan))];
-      const kecSelect = document.getElementById("kecamatan");
-      kecSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
-      kecamatanSet.forEach(k => {
-        kecSelect.innerHTML += `<option value="${k}">${k}</option>`;
-      });
+      try {
+        const res = await fetch(SHEETS_API_URL + "?action=getWilayah");
+        const data = await res.json();
+
+        kelurahanSelect.innerHTML = `<option value="">-- Pilih Kelurahan --</option>`;
+        data.forEach(row => {
+          const option = document.createElement("option");
+          option.value = row.Kelurahan;
+          option.textContent = row.Kelurahan;
+          option.dataset.kecamatan = row.Kecamatan;
+          kelurahanSelect.appendChild(option);
+        });
+      } catch (err) {
+        kelurahanSelect.innerHTML = `<option>Error memuat data</option>`;
+      }
     }
 
-    document.getElementById("kecamatan").addEventListener("change", (e) => {
-      const kelSelect = document.getElementById("kelurahan");
-      kelSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
-      const selected = e.target.value;
-      const filtered = wilayahData.filter(w => w.kecamatan === selected);
-      filtered.forEach(w => {
-        kelSelect.innerHTML += `<option value="${w.kelurahan}">${w.kelurahan}</option>`;
-      });
+    document.getElementById("kelurahan").addEventListener("change", function() {
+      const selected = this.options[this.selectedIndex];
+      document.getElementById("kecamatan").value = selected.dataset.kecamatan || "";
     });
 
     document.getElementById("generateBtn").addEventListener("click", async () => {
       const nama = document.getElementById("nama").value.trim();
-      const kelurahan = document.getElementById("kelurahan").value.trim();
-      const kecamatan = document.getElementById("kecamatan").value.trim();
-
+      const kelurahan = document.getElementById("kelurahan").value;
+      const kecamatan = document.getElementById("kecamatan").value;
       const resultDiv = document.getElementById("result");
-      resultDiv.style.display = "none";
 
-      if (!nama || !kelurahan || !kecamatan) {
-        alert("Isi semua kolom terlebih dahulu!");
+      if (!nama || !kelurahan) {
+        resultDiv.textContent = "Harap isi semua data terlebih dahulu.";
         return;
       }
 
-      resultDiv.innerText = "Menghasilkan kode...";
-      resultDiv.style.display = "block";
+      resultDiv.textContent = "Mengirim data...";
 
       try {
-        const res = await fetch(scriptURL, {
+        const res = await fetch(SHEETS_API_URL, {
           method: "POST",
-          body: JSON.stringify({ nama, kelurahan, kecamatan }),
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nama, kelurahan, kecamatan })
         });
-        const data = await res.json();
 
-        if (data.success) {
-          resultDiv.innerHTML = `Kode Unik Kamu:<br><strong style="font-size:1.3rem;color:var(--gold)">${data.kode}</strong>`;
-        } else {
-          resultDiv.innerText = "Gagal generate kode. Coba lagi.";
-        }
+        const result = await res.json();
+        resultDiv.textContent = result.token 
+          ? `Token Anda: ${result.token}` 
+          : "Gagal membuat token.";
       } catch (err) {
-        console.error(err);
-        resultDiv.innerText = "Terjadi kesalahan koneksi ke server.";
+        resultDiv.textContent = "Gagal terhubung ke server.";
       }
     });
 
-    loadWilayah();
+    loadKelurahan();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generate Token - WAC NasDem</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0b1e4a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #ffcc00;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #ccc;
+      margin-top: 0;
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 25px 30px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+      color: #ffcc00;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: #ffcc00;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #0b1e4a;
+      font-size: 16px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background: #ffd633;
+      transform: scale(1.03);
+    }
+
+    .result {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+      word-break: break-word;
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 13px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>Generate Token - WAC NasDem</h1>
+  <p>Masukkan nama dan wilayah Anda untuk mendapatkan token akses.</p>
+
+  <div class="form-container">
+    <label for="nama">Nama:</label>
+    <input type="text" id="nama" placeholder="Masukkan nama lengkap">
+
+    <label for="kelurahan">Kelurahan:</label>
+    <select id="kelurahan">
+      <option value="">Memuat data...</option>
+    </select>
+
+    <label for="kecamatan">Kecamatan:</label>
+    <input type="text" id="kecamatan" readonly />
+
+    <button id="generateBtn">Generate Token</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <footer>© 2025 WAC NasDem - Developed by Timothy Kenneth</footer>
+
+  <script>
+    const SHEETS_API_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec"; // ganti pake URL script.gs publish-an kamu
+
+    async function loadKelurahan() {
+      const kelurahanSelect = document.getElementById("kelurahan");
+      kelurahanSelect.innerHTML = `<option>Memuat data...</option>`;
+
+      try {
+        const res = await fetch(SHEETS_API_URL + "?action=getWilayah");
+        const data = await res.json();
+
+        kelurahanSelect.innerHTML = `<option value="">-- Pilih Kelurahan --</option>`;
+        data.forEach(row => {
+          const option = document.createElement("option");
+          option.value = row.Kelurahan;
+          option.textContent = row.Kelurahan;
+          option.dataset.kecamatan = row.Kecamatan;
+          kelurahanSelect.appendChild(option);
+        });
+      } catch (err) {
+        kelurahanSelect.innerHTML = `<option>Error memuat data</option>`;
+      }
+    }
+
+    document.getElementById("kelurahan").addEventListener("change", function() {
+      const selected = this.options[this.selectedIndex];
+      document.getElementById("kecamatan").value = selected.dataset.kecamatan || "";
+    });
+
+    document.getElementById("generateBtn").addEventListener("click", async () => {
+      const nama = document.getElementById("nama").value.trim();
+      const kelurahan = document.getElementById("kelurahan").value;
+      const kecamatan = document.getElementById("kecamatan").value;
+      const resultDiv = document.getElementById("result");
+
+      if (!nama || !kelurahan) {
+        resultDiv.textContent = "Harap isi semua data terlebih dahulu.";
+        return;
+      }
+
+      resultDiv.textContent = "Mengirim data...";
+
+      try {
+        const res = await fetch(SHEETS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nama, kelurahan, kecamatan })
+        });
+
+        const result = await res.json();
+        resultDiv.textContent = result.token 
+          ? `Token Anda: ${result.token}` 
+          : "Gagal membuat token.";
+      } catch (err) {
+        resultDiv.textContent = "Gagal terhubung ke server.";
+      }
+    });
+
+    loadKelurahan();
   </script>
 </body>
 </html>
