@@ -38,7 +38,7 @@
             border: 1px solid #ccc;
             border-radius: 8px;
             font-size: 15px;
-            box-sizing: border-box; /* Penting untuk padding */
+            box-sizing: border-box;
         }
         button {
             background: #0078ff;
@@ -60,7 +60,7 @@
             font-weight: 600;
             color: #2e7d32;
             display: none;
-            word-break: break-all; /* Agar kode panjang tidak merusak layout */
+            word-break: break-all;
         }
         .error {
             background: #ffebee;
@@ -130,36 +130,37 @@
                     body: JSON.stringify({ nama, kelurahan, kecamatan })
                 });
 
-                // Pastikan respons berhasil diambil
+                // Cek status HTTP, jika OK, lanjut baca JSON
                 if (!res.ok) {
-                    throw new Error(`HTTP Error: ${res.status}`);
+                    throw new Error(`Server merespon status HTTP ${res.status}`);
                 }
 
                 const data = await res.json();
-                
                 let finalMessage = "";
 
+                // Tangani status dari Apps Script (success, exists, error)
                 if (data.status === "success") {
                     finalMessage = `✅ **Kode berhasil dibuat:** ${data.kode}`;
                     resultDiv.classList.remove("error");
-                    resultDiv.style.fontWeight = 'bold';
+                    resultDiv.style.backgroundColor = '#e8f5e9';
+                    resultDiv.style.color = '#2e7d32';
                 } else if (data.status === "exists") {
-                    finalMessage = `⚠️ **Kode sudah ada:** ${data.kode} (Data ini telah terdaftar sebelumnya)`;
+                    finalMessage = `⚠️ **Kode sudah ada:** ${data.kode} (Data ini telah terdaftar)`;
                     resultDiv.classList.remove("error");
-                    resultDiv.style.backgroundColor = '#fff3e0'; // Warna peringatan
+                    resultDiv.style.backgroundColor = '#fff3e0';
                     resultDiv.style.color = '#ff6f00';
                 } 
                 else { // status === "error"
                     finalMessage = `❌ **Gagal:** ${data.message || "Terjadi kesalahan yang tidak diketahui."}`;
                     resultDiv.classList.add("error");
-                    resultDiv.style.fontWeight = 'normal';
                 }
 
                 resultDiv.innerHTML = finalMessage;
                 resultDiv.style.display = "block";
 
             } catch (err) {
-                resultDiv.textContent = `❌ Gagal terhubung/membaca respons server: ${err.message}. Pastikan URL Apps Script sudah benar.`;
+                // Tangani kesalahan jaringan, CORS, atau JSON parsing
+                resultDiv.textContent = `❌ Gagal terhubung/membaca respons server: ${err.message}. Mohon cek URL dan koneksi.`;
                 resultDiv.classList.add("error");
             } finally {
                 submitButton.disabled = false;
