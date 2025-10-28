@@ -1,188 +1,171 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generator Kode Unik - WAC NasDem</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Kode Kepala Wilayah</title>
     <style>
-      :root {
-        --blue-dark: #001f5b;
-        --blue-mid: #0a3d91;
-        --gold: #f5b700;
-        --white: #fff;
-        --radius: 14px;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: Poppins, sans-serif;
-        background: linear-gradient(180deg, var(--blue-dark), var(--blue-mid));
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        color: #222;
-      }
-      .container {
-        background: var(--white);
-        padding: 2rem;
-        border-radius: var(--radius);
-        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.25);
-        width: 90%;
-        max-width: 420px;
-      }
-      h1 {
-        text-align: center;
-        color: var(--blue-dark);
-        margin-bottom: 0.5rem;
-      }
-      h2 {
-        text-align: center;
-        color: var(--gold);
-        margin-top: 0;
-        margin-bottom: 1.5rem;
-      }
-      label {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: block;
-      }
-      input,
-      select {
-        width: 100%;
-        padding: 0.7rem;
-        margin-bottom: 1.2rem;
-        border: 1px solid #ccc;
-        border-radius: var(--radius);
-        font-size: 1rem;
-      }
-      button {
-        width: 100%;
-        background: var(--blue-dark);
-        color: white;
-        border: none;
-        padding: 0.9rem;
-        border-radius: var(--radius);
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.25s ease;
-      }
-      button:hover {
-        background: var(--gold);
-        color: var(--blue-dark);
-      }
-      .result {
-        text-align: center;
-        margin-top: 1.5rem;
-        font-weight: 600;
-        color: var(--blue-dark);
-        word-break: break-word;
-        background: #f7f9fc;
-        padding: 1rem;
-        border-radius: var(--radius);
-        border: 1px dashed var(--gold);
-        display: none;
-      }
-      footer {
-        margin-top: 2rem;
-        text-align: center;
-        font-size: 0.8rem;
-        color: #f5f5f5;
-      }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f7f9fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 420px;
+        }
+        h2 {
+            text-align: center;
+            color: #222;
+        }
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 4px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box; /* Penting untuk padding */
+        }
+        button {
+            background: #0078ff;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #005fc7;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            padding: 12px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2e7d32;
+            display: none;
+            word-break: break-all; /* Agar kode panjang tidak merusak layout */
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <h1>Generator Kode Unik</h1>
-      <h2>Relawan WAC - Partai NasDem</h2>
-      <label for="nama">Nama Kepala</label>
-      <input type="text" id="nama" placeholder="Contoh: Sari" required />
-      <label for="kecamatan">Kecamatan</label>
-      <select id="kecamatan">
-        <option value="">Memuat data...</option>
-      </select>
-      <label for="kelurahan">Kelurahan</label>
-      <select id="kelurahan">
-        <option value="">Pilih kecamatan terlebih dahulu</option>
-      </select>
-      <button id="generateBtn">Generate Kode</button>
-      <div class="result" id="result"></div>
+        <h2>Generate Kode Kepala</h2>
+        <form id="generateForm">
+            <label>Nama Lengkap</label>
+            <input type="text" id="nama" required placeholder="Masukkan nama lengkap">
+
+            <label>Kecamatan</label>
+            <select id="kecamatan">
+                <option value="Cilandak">Cilandak</option>
+            </select>
+
+            <label>Kelurahan</label>
+            <select id="kelurahan" required>
+                <option value="">-- Pilih Kelurahan --</option>
+                <option value="Cipete Selatan">Cipete Selatan</option>
+                <option value="Gandaria Selatan">Gandaria Selatan</option>
+                <option value="Cilandak Barat">Cilandak Barat</option>
+                <option value="Lebak Bulus">Lebak Bulus</option>
+                <option value="Pondok Labu">Pondok Labu</option>
+            </select>
+
+            <button type="submit" id="submitButton">Generate</button>
+        </form>
+
+        <div class="result" id="result"></div>
     </div>
-    <footer>© 2025 WAC NasDem • Dibuat dengan semangat perubahan</footer>
 
     <script>
-      const scriptURL = "https://script.google.com/macros/s/AKfycbzhksVpCG61-__WDstDqm2RXLTTmvD-6fqj996ckT1K9rsz64AtQCzLqghppLmY1NAv/exec"; // Ganti dengan link Web App terbaru
+        // *** GANTI DENGAN URL WEB APP ANDA YANG BARU SETELAH REDEPLOY ***
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUVf20jkmegdOc4JbsD8kHpbQ-5UVtZqiZx75B392Ck3tdob30EF2DcnvGQjxexk5w2g/exec"; 
 
-      let wilayahData = [];
+        document.getElementById("generateForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const submitButton = document.getElementById("submitButton");
+            const resultDiv = document.getElementById("result");
+            const nama = document.getElementById("nama").value.trim();
+            const kelurahan = document.getElementById("kelurahan").value.trim();
+            const kecamatan = document.getElementById("kecamatan").value.trim();
 
-      async function loadWilayah() {
-        try {
-          const res = await fetch(`${scriptURL}?action=getWilayah`);
-          const data = await res.json();
-          wilayahData = data.data || [];
-
-          const kecSelect = document.getElementById("kecamatan");
-          kecSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
-          [...new Set(wilayahData.map((w) => w.kecamatan))].forEach((k) => {
-            kecSelect.innerHTML += `<option value="${k}">${k}</option>`;
-          });
-        } catch (err) {
-          alert(
-            "Gagal memuat data wilayah. Periksa koneksi atau izin Apps Script."
-          );
-        }
-      }
-
-      document.getElementById("kecamatan").addEventListener("change", (e) => {
-        const kelSelect = document.getElementById("kelurahan");
-        kelSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
-        const selected = e.target.value;
-        wilayahData
-          .filter((w) => w.kecamatan === selected)
-          .forEach((w) => {
-            kelSelect.innerHTML += `<option value="${w.kelurahan}">${w.kelurahan}</option>`;
-          });
-      });
-
-      document
-        .getElementById("generateBtn")
-        .addEventListener("click", async () => {
-          const nama = document.getElementById("nama").value.trim();
-          const kelurahan = document.getElementById("kelurahan").value.trim();
-          const kecamatan = document.getElementById("kecamatan").value.trim();
-          const resultDiv = document.getElementById("result");
-          if (!nama || !kelurahan || !kecamatan) {
-            alert("Isi semua kolom!");
-            return;
-          }
-          resultDiv.style.display = "block";
-          resultDiv.innerText = "Menghasilkan kode...";
-          try {
-            const res = await fetch(scriptURL, {
-              method: "POST",
-              body: JSON.stringify({ nama, kelurahan, kecamatan }),
-              headers: { "Content-Type": "application/json" },
-            });
-            const data = await res.json();
-            if (data.success) {
-              resultDiv.innerHTML = `${
-                data.reused ? "Kode lama kamu:" : "Kode unik baru kamu:"
-              }<br>
-<strong style="font-size:1.3rem;color:var(--gold)">${data.token}</strong>`;
-            } else {
-              resultDiv.innerText = data.message || "Gagal generate kode.";
+            if (!nama || !kelurahan) {
+                resultDiv.textContent = "Mohon isi Nama Lengkap dan Kelurahan.";
+                resultDiv.classList.add("error");
+                resultDiv.style.display = "block";
+                return;
             }
-          } catch (err) {
-            console.error(err);
-            resultDiv.innerText = "Terjadi kesalahan koneksi ke server.";
-          }
-        });
 
-      loadWilayah();
+            // Status loading
+            submitButton.disabled = true;
+            submitButton.textContent = "Memproses...";
+            resultDiv.style.display = "block";
+            resultDiv.textContent = "Menghubungi server...";
+            resultDiv.classList.remove("error");
+
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nama, kelurahan, kecamatan })
+                });
+
+                // Pastikan respons berhasil diambil
+                if (!res.ok) {
+                    throw new Error(`HTTP Error: ${res.status}`);
+                }
+
+                const data = await res.json();
+                
+                let finalMessage = "";
+
+                if (data.status === "success") {
+                    finalMessage = `✅ **Kode berhasil dibuat:** ${data.kode}`;
+                    resultDiv.classList.remove("error");
+                    resultDiv.style.fontWeight = 'bold';
+                } else if (data.status === "exists") {
+                    finalMessage = `⚠️ **Kode sudah ada:** ${data.kode} (Data ini telah terdaftar sebelumnya)`;
+                    resultDiv.classList.remove("error");
+                    resultDiv.style.backgroundColor = '#fff3e0'; // Warna peringatan
+                    resultDiv.style.color = '#ff6f00';
+                } 
+                else { // status === "error"
+                    finalMessage = `❌ **Gagal:** ${data.message || "Terjadi kesalahan yang tidak diketahui."}`;
+                    resultDiv.classList.add("error");
+                    resultDiv.style.fontWeight = 'normal';
+                }
+
+                resultDiv.innerHTML = finalMessage;
+                resultDiv.style.display = "block";
+
+            } catch (err) {
+                resultDiv.textContent = `❌ Gagal terhubung/membaca respons server: ${err.message}. Pastikan URL Apps Script sudah benar.`;
+                resultDiv.classList.add("error");
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "Generate";
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
