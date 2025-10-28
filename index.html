@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate Token Kepala Wilayah</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f7f9fb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .container {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 420px;
+      }
+      h2 {
+        text-align: center;
+        color: #222;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: 600;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 4px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+      button {
+        background: #0078ff;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      button:hover {
+        background: #005fc7;
+      }
+      .result {
+        margin-top: 20px;
+        text-align: center;
+        padding: 12px;
+        background: #e8f5e9;
+        border-radius: 8px;
+        font-weight: 600;
+        color: #2e7d32;
+        display: none;
+      }
+      .error {
+        background: #ffebee;
+        color: #c62828;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Generate Kode Kepala</h2>
+      <form id="generateForm">
+        <label>Nama Lengkap</label>
+        <input
+          type="text"
+          id="nama"
+          required
+          placeholder="Masukkan nama lengkap"
+        />
+
+        <label>Kecamatan</label>
+        <select id="kecamatan">
+          <option value="Cilandak">Cilandak</option>
+        </select>
+
+        <label>Kelurahan</label>
+        <select id="kelurahan" required>
+          <option value="">-- Pilih Kelurahan --</option>
+          <option value="Cipete Selatan">Cipete Selatan</option>
+          <option value="Gandaria Selatan">Gandaria Selatan</option>
+          <option value="Cilandak Barat">Cilandak Barat</option>
+          <option value="Lebak Bulus">Lebak Bulus</option>
+          <option value="Pondok Labu">Pondok Labu</option>
+        </select>
+
+        <button type="submit">Generate</button>
+      </form>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <script>
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycby6PbpYssMkH_mE9xDhgFu5moPMBPpMuZvYsLi8TWfkGKITKgLIh1VesRZBxxcox1iI/exec"; // <-- ganti sama URL Apps Script
+
+      document
+        .getElementById("generateForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const nama = document.getElementById("nama").value.trim();
+          const kelurahan = document.getElementById("kelurahan").value.trim();
+          const kecamatan = document.getElementById("kecamatan").value.trim();
+          const resultDiv = document.getElementById("result");
+
+          if (!nama || !kelurahan) {
+            resultDiv.textContent = "Mohon isi semua data.";
+            resultDiv.classList.add("error");
+            resultDiv.style.display = "block";
+            return;
+          }
+
+          resultDiv.style.display = "block";
+          resultDiv.textContent = "Sedang memproses...";
+          resultDiv.classList.remove("error");
+
+          try {
+            const res = await fetch(SCRIPT_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nama, kelurahan, kecamatan }),
+            });
+
+            const data = await res.json();
+
+            if (data.status === "success") {
+              resultDiv.textContent = `Kode unik Anda: ${data.kode}`;
+              resultDiv.classList.remove("error");
+            } else {
+              resultDiv.textContent = `Gagal: ${
+                data.message || "Terjadi kesalahan."
+              }`;
+              resultDiv.classList.add("error");
+            }
+          } catch (err) {
+            resultDiv.textContent = "Gagal terhubung ke server.";
+            resultDiv.classList.add("error");
+          }
+        });
+    </script>
+  </body>
+</html>
