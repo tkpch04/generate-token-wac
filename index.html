@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generate Kode Kepala</title>
+    <title>Generate Kode Kepala Wilayah</title>
     <style>
       body {
-        font-family: "Segoe UI";
+        font-family: "Segoe UI", sans-serif;
         background: #f7f9fb;
         display: flex;
         justify-content: center;
@@ -81,40 +81,47 @@
           required
           placeholder="Masukkan nama lengkap"
         />
+
         <label>Kecamatan</label>
         <select id="kecamatan">
           <option value="">-- Pilih Kecamatan --</option>
         </select>
+
         <label>Kelurahan</label>
         <select id="kelurahan">
           <option value="">-- Pilih Kelurahan --</option>
         </select>
+
         <button type="submit" id="submitButton">Generate</button>
       </form>
+
       <div class="result" id="result"></div>
     </div>
 
     <script>
+      // URL Web App GAS
       const SCRIPT_URL =
         "https://script.google.com/macros/s/AKfycby2OCg0JeD_FoWmf_27AiV_VewSHwpR1ygWytDsDx-gtfM_XzT0ucwinS9RNF0pJr87QQ/exec";
       let wilayahData = [];
 
-      // Ambil data wilayah dari sheet
+      // Load wilayah dari GAS
       async function loadWilayah() {
         try {
           const res = await fetch(`${SCRIPT_URL}?action=getWilayah`);
           const data = await res.json();
-          if (data.status !== "success")
-            throw new Error(data.message || "Gagal ambil wilayah");
-          wilayahData = data.data;
+          wilayahData = data.data || [];
+
           const kecSelect = document.getElementById("kecamatan");
           kecSelect.innerHTML =
             '<option value="">-- Pilih Kecamatan --</option>';
           [...new Set(wilayahData.map((w) => w.kecamatan))].forEach((k) => {
-            kecSelect.innerHTML += `<option value="${k}">${k}</option>`;
+            const kodeKec = wilayahData.find(
+              (w) => w.kecamatan === k
+            ).kodeKecamatan;
+            kecSelect.innerHTML += `<option value="${kodeKec}">${k}</option>`;
           });
         } catch (err) {
-          alert("Gagal memuat wilayah: " + err.message);
+          alert("Gagal memuat data wilayah. Cek koneksi/Apps Script");
         }
       }
 
@@ -122,44 +129,50 @@
       document.getElementById("kecamatan").addEventListener("change", (e) => {
         const kelSelect = document.getElementById("kelurahan");
         kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan --</option>';
-        const selected = e.target.value;
+        const selectedKodeKec = e.target.value;
         wilayahData
-          .filter((w) => w.kecamatan === selected)
+          .filter((w) => w.kodeKecamatan === selectedKodeKec)
           .forEach((w) => {
-            kelSelect.innerHTML += `<option value="${w.kelurahan}">${w.kelurahan}</option>`;
+            kelSelect.innerHTML += `<option value="${w.kodeKelurahan}">${w.kelurahan}</option>`;
           });
       });
 
-      // Generate token
+      // Generate kode
       document
         .getElementById("generateForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
-          const nama = document.getElementById("nama").value.trim();
-          const kelurahan = document.getElementById("kelurahan").value.trim();
-          const kecamatan = document.getElementById("kecamatan").value.trim();
+          const submitButton = document.getElementById("submitButton");
           const resultDiv = document.getElementById("result");
-          if (!nama || !kelurahan) {
+          const nama = document.getElementById("nama").value.trim();
+          const kodeKel = document.getElementById("kelurahan").value;
+          const kodeKec = document.getElementById("kecamatan").value;
+
+          if (!nama || !kodeKel || !kodeKec) {
             resultDiv.textContent = "Isi semua kolom!";
             resultDiv.classList.add("error");
             resultDiv.style.display = "block";
             return;
           }
 
+          submitButton.disabled = true;
+          submitButton.textContent = "Memproses...";
           resultDiv.style.display = "block";
           resultDiv.textContent = "Menghubungi server...";
           resultDiv.classList.remove("error");
+
           try {
-            const url = `${SCRIPT_URL}?action=generateToken&nama=${encodeURIComponent(
-              nama
-            )}&kelurahan=${encodeURIComponent(
-              kelurahan
-            )}&kecamatan=${encodeURIComponent(kecamatan)}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const urlParams = new URLSearchParams({
+              action: "generateToken",
+              nama: nama,
+              kodeKelurahan: kodeKel,
+              kodeKecamatan: kodeKec,
+            });
+            const res = await fetch(`${SCRIPT_URL}?${urlParams.toString()}`);
+            if (!res.ok) throw new Error(`Server status ${res.status}`);
             const data = await res.json();
             if (data.status === "success") {
-              resultDiv.textContent = `✅ Kode: ${data.kode}`;
+              resultDiv.textContent = `✅ Kode berhasil dibuat: ${data.kode}`;
               resultDiv.classList.remove("error");
             } else if (data.status === "exists") {
               resultDiv.textContent = `⚠️ Kode sudah ada: ${data.kode}`;
@@ -169,12 +182,14 @@
               resultDiv.classList.add("error");
             }
           } catch (err) {
-            resultDiv.textContent = `❌ Error: ${err.message}`;
+            resultDiv.textContent = `❌ Gagal terhubung server: ${err.message}`;
             resultDiv.classList.add("error");
+          } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = "Generate";
           }
         });
 
-      // Load wilayah saat page ready
       loadWilayah();
     </script>
   </body>
