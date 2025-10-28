@@ -15,9 +15,7 @@
       --radius: 14px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -115,7 +113,6 @@
       font-size: 0.8rem;
       color: #f5f5f5;
     }
-
   </style>
 </head>
 <body>
@@ -126,6 +123,16 @@
 
     <label for="nama">Nama Kepala</label>
     <input type="text" id="nama" placeholder="Contoh: Sari" required />
+
+    <label for="kecamatan">Kecamatan</label>
+    <select id="kecamatan">
+      <option value="">Pilih Kecamatan</option>
+      <option value="Cilandak">Cilandak</option>
+      <option value="Kebayoran Baru">Kebayoran Baru</option>
+      <option value="Pasar Minggu">Pasar Minggu</option>
+      <option value="Jagakarsa">Jagakarsa</option>
+      <option value="Pancoran">Pancoran</option>
+    </select>
 
     <label for="kelurahan">Kelurahan</label>
     <select id="kelurahan">
@@ -138,7 +145,6 @@
     </select>
 
     <button id="generateBtn">Generate Kode</button>
-
     <div class="result" id="result"></div>
   </div>
 
@@ -149,14 +155,14 @@
 
     document.getElementById("generateBtn").addEventListener("click", async () => {
       const nama = document.getElementById("nama").value.trim();
+      const kecamatan = document.getElementById("kecamatan").value.trim();
       const kelurahan = document.getElementById("kelurahan").value.trim();
-      const kecamatan = "Cilandak";
-
       const resultDiv = document.getElementById("result");
+
       resultDiv.style.display = "none";
 
-      if (!nama || !kelurahan) {
-        alert("Isi nama dan pilih kelurahan terlebih dahulu!");
+      if (!nama || !kecamatan || !kelurahan) {
+        alert("Isi semua data terlebih dahulu!");
         return;
       }
 
@@ -169,8 +175,8 @@
           body: JSON.stringify({ nama, kelurahan, kecamatan }),
           headers: { "Content-Type": "application/json" }
         });
-        const data = await res.json();
 
+        const data = await res.json();
         if (data.success) {
           resultDiv.innerHTML = `Kode Unik Kamu:<br><strong style="font-size:1.3rem;color:var(--gold)">${data.kode}</strong>`;
         } else {
