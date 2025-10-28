@@ -14,9 +14,7 @@
       --white: #fff;
       --radius: 14px;
     }
-
     * { box-sizing: border-box; }
-
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(180deg, var(--blue-dark), var(--blue-mid));
@@ -29,7 +27,6 @@
       min-height: 100vh;
       color: var(--text);
     }
-
     .container {
       background: var(--white);
       padding: 2rem;
@@ -39,34 +36,10 @@
       max-width: 420px;
       animation: fadeIn 0.5s ease;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h1 {
-      text-align: center;
-      color: var(--blue-dark);
-      font-size: 1.6rem;
-      margin-bottom: 0.5rem;
-    }
-
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      color: var(--gold);
-      margin-top: 0;
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      font-weight: 600;
-      color: var(--text);
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    h1 { text-align: center; color: var(--blue-dark); font-size: 1.6rem; margin-bottom: 0.5rem; }
+    h2 { text-align: center; font-size: 1rem; color: var(--gold); margin-top: 0; margin-bottom: 1.5rem; }
+    label { font-weight: 600; color: var(--text); display: block; margin-bottom: 0.5rem; }
     input, select {
       width: 100%;
       padding: 0.7rem;
@@ -75,7 +48,6 @@
       border-radius: var(--radius);
       font-size: 1rem;
     }
-
     button {
       width: 100%;
       background: var(--blue-dark);
@@ -88,12 +60,7 @@
       cursor: pointer;
       transition: all 0.25s ease;
     }
-
-    button:hover {
-      background: var(--gold);
-      color: var(--blue-dark);
-    }
-
+    button:hover { background: var(--gold); color: var(--blue-dark); }
     .result {
       text-align: center;
       margin-top: 1.5rem;
@@ -106,7 +73,6 @@
       border: 1px dashed var(--gold);
       display: none;
     }
-
     footer {
       margin-top: 2rem;
       text-align: center;
@@ -126,25 +92,16 @@
 
     <label for="kecamatan">Kecamatan</label>
     <select id="kecamatan">
-      <option value="">Pilih Kecamatan</option>
-      <option value="Cilandak">Cilandak</option>
-      <option value="Kebayoran Baru">Kebayoran Baru</option>
-      <option value="Pasar Minggu">Pasar Minggu</option>
-      <option value="Jagakarsa">Jagakarsa</option>
-      <option value="Pancoran">Pancoran</option>
+      <option value="">Memuat data...</option>
     </select>
 
     <label for="kelurahan">Kelurahan</label>
     <select id="kelurahan">
-      <option value="">Pilih Kelurahan</option>
-      <option value="Cipete Selatan">Cipete Selatan</option>
-      <option value="Gandaria Selatan">Gandaria Selatan</option>
-      <option value="Cilandak Barat">Cilandak Barat</option>
-      <option value="Lebak Bulus">Lebak Bulus</option>
-      <option value="Pondok Labu">Pondok Labu</option>
+      <option value="">Pilih kecamatan terlebih dahulu</option>
     </select>
 
     <button id="generateBtn">Generate Kode</button>
+
     <div class="result" id="result"></div>
   </div>
 
@@ -152,17 +109,41 @@
 
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycby6PbpYssMkH_mE9xDhgFu5moPMBPpMuZvYsLi8TWfkGKITKgLIh1VesRZBxxcox1iI/exec";
+    let wilayahData = [];
+
+    // ambil data wilayah
+    async function loadWilayah() {
+      const res = await fetch(scriptURL);
+      wilayahData = await res.json();
+
+      const kecamatanSet = [...new Set(wilayahData.map(w => w.kecamatan))];
+      const kecSelect = document.getElementById("kecamatan");
+      kecSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+      kecamatanSet.forEach(k => {
+        kecSelect.innerHTML += `<option value="${k}">${k}</option>`;
+      });
+    }
+
+    document.getElementById("kecamatan").addEventListener("change", (e) => {
+      const kelSelect = document.getElementById("kelurahan");
+      kelSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
+      const selected = e.target.value;
+      const filtered = wilayahData.filter(w => w.kecamatan === selected);
+      filtered.forEach(w => {
+        kelSelect.innerHTML += `<option value="${w.kelurahan}">${w.kelurahan}</option>`;
+      });
+    });
 
     document.getElementById("generateBtn").addEventListener("click", async () => {
       const nama = document.getElementById("nama").value.trim();
-      const kecamatan = document.getElementById("kecamatan").value.trim();
       const kelurahan = document.getElementById("kelurahan").value.trim();
-      const resultDiv = document.getElementById("result");
+      const kecamatan = document.getElementById("kecamatan").value.trim();
 
+      const resultDiv = document.getElementById("result");
       resultDiv.style.display = "none";
 
-      if (!nama || !kecamatan || !kelurahan) {
-        alert("Isi semua data terlebih dahulu!");
+      if (!nama || !kelurahan || !kecamatan) {
+        alert("Isi semua kolom terlebih dahulu!");
         return;
       }
 
@@ -175,8 +156,8 @@
           body: JSON.stringify({ nama, kelurahan, kecamatan }),
           headers: { "Content-Type": "application/json" }
         });
-
         const data = await res.json();
+
         if (data.success) {
           resultDiv.innerHTML = `Kode Unik Kamu:<br><strong style="font-size:1.3rem;color:var(--gold)">${data.kode}</strong>`;
         } else {
@@ -187,6 +168,8 @@
         resultDiv.innerText = "Terjadi kesalahan koneksi ke server.";
       }
     });
+
+    loadWilayah();
   </script>
 </body>
 </html>
