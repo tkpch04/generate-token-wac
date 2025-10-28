@@ -1,105 +1,172 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generator Kode Kepala Wilayah</title>
-<style>
-body { font-family: 'Segoe UI', sans-serif; background:#f7f9fb; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0;}
-.container { background:white; border-radius:16px; padding:24px; box-shadow:0 4px 12px rgba(0,0,0,0.1); width:100%; max-width:420px;}
-h2{text-align:center;color:#222;}
-label{display:block;margin-top:12px;font-weight:600;}
-input, select, button{width:100%;padding:10px;margin-top:4px;border:1px solid #ccc;border-radius:8px;font-size:15px;box-sizing:border-box;}
-button{background:#0078ff;color:white;font-weight:600;cursor:pointer;transition:.3s;margin-top:20px;}
-button:hover{background:#005fc7;}
-.result{margin-top:20px;text-align:center;padding:12px;background:#e8f5e9;border-radius:8px;font-weight:600;color:#2e7d32;display:none;word-break:break-all;}
-.error{background:#ffebee;color:#c62828;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Kode Kepala Wilayah</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f7f9fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 420px;
+        }
+        h2 {
+            text-align: center;
+            color: #222;
+        }
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 4px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #0078ff;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #005fc7;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            padding: 12px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2e7d32;
+            display: none;
+            word-break: break-all;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<h2>Generate Kode Kepala</h2>
-<label>Nama Lengkap</label>
-<input type="text" id="nama" placeholder="Masukkan nama lengkap">
+    <div class="container">
+        <h2>Generate Kode Kepala</h2>
+        <form id="generateForm">
+            <label>Nama Lengkap</label>
+            <input type="text" id="nama" required placeholder="Masukkan nama lengkap">
 
-<label>Kecamatan</label>
-<select id="kecamatan"></select>
+            <label>Kecamatan</label>
+            <select id="kecamatan">
+                <option value="Cilandak">Cilandak</option>
+            </select>
 
-<label>Kelurahan</label>
-<select id="kelurahan"></select>
+            <label>Kelurahan</label>
+            <select id="kelurahan" required>
+                <option value="">-- Pilih Kelurahan --</option>
+                <option value="Cipete Selatan">Cipete Selatan</option>
+                <option value="Gandaria Selatan">Gandaria Selatan</option>
+                <option value="Cilandak Barat">Cilandak Barat</option>
+                <option value="Lebak Bulus">Lebak Bulus</option>
+                <option value="Pondok Labu">Pondok Labu</option>
+            </select>
 
-<button id="generateBtn">Generate</button>
-<div class="result" id="result"></div>
-</div>
+            <button type="submit" id="submitButton">Generate</button>
+        </form>
 
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUVf20jkmegdOc4JbsD8kHpbQ-5UVtZqiZx75B392Ck3tdob30EF2DcnvGQjxexk5w2g/exec"; // ganti URL Web App GAS
+        <div class="result" id="result"></div>
+    </div>
 
-let wilayahData = [];
+    <script>
+        // *** GANTI DENGAN URL WEB APP ANDA YANG BARU SETELAH REDEPLOY ***
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUVf20jkmegdOc4JbsD8kHpbQ-5UVtZqiZx75B392Ck3tdob30EF2DcnvGQjxexk5w2g/exec"; 
 
-async function loadWilayah() {
-    try {
-        const res = await fetch(`${SCRIPT_URL}?action=getWilayah`);
-        const data = await res.json();
-        wilayahData = data.data || [];
+        document.getElementById("generateForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const submitButton = document.getElementById("submitButton");
+            const resultDiv = document.getElementById("result");
+            const nama = document.getElementById("nama").value.trim();
+            const kelurahan = document.getElementById("kelurahan").value.trim();
+            const kecamatan = document.getElementById("kecamatan").value.trim();
 
-        const kecSelect = document.getElementById("kecamatan");
-        kecSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
-        [...new Set(wilayahData.map(w=>w.kecamatan))].forEach(k=>{
-            kecSelect.innerHTML += `<option value="${k}">${k}</option>`;
+            if (!nama || !kelurahan) {
+                resultDiv.textContent = "Mohon isi Nama Lengkap dan Kelurahan.";
+                resultDiv.classList.add("error");
+                resultDiv.style.display = "block";
+                return;
+            }
+
+            // Status loading
+            submitButton.disabled = true;
+            submitButton.textContent = "Memproses...";
+            resultDiv.style.display = "block";
+            resultDiv.textContent = "Menghubungi server...";
+            resultDiv.classList.remove("error");
+
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nama, kelurahan, kecamatan })
+                });
+
+                // Cek status HTTP, jika OK, lanjut baca JSON
+                if (!res.ok) {
+                    throw new Error(`Server merespon status HTTP ${res.status}`);
+                }
+
+                const data = await res.json();
+                let finalMessage = "";
+
+                // Tangani status dari Apps Script (success, exists, error)
+                if (data.status === "success") {
+                    finalMessage = `✅ **Kode berhasil dibuat:** ${data.kode}`;
+                    resultDiv.classList.remove("error");
+                    resultDiv.style.backgroundColor = '#e8f5e9';
+                    resultDiv.style.color = '#2e7d32';
+                } else if (data.status === "exists") {
+                    finalMessage = `⚠️ **Kode sudah ada:** ${data.kode} (Data ini telah terdaftar)`;
+                    resultDiv.classList.remove("error");
+                    resultDiv.style.backgroundColor = '#fff3e0';
+                    resultDiv.style.color = '#ff6f00';
+                } 
+                else { // status === "error"
+                    finalMessage = `❌ **Gagal:** ${data.message || "Terjadi kesalahan yang tidak diketahui."}`;
+                    resultDiv.classList.add("error");
+                }
+
+                resultDiv.innerHTML = finalMessage;
+                resultDiv.style.display = "block";
+
+            } catch (err) {
+                // Tangani kesalahan jaringan, CORS, atau JSON parsing
+                resultDiv.textContent = `❌ Gagal terhubung/membaca respons server: ${err.message}. Mohon cek URL dan koneksi.`;
+                resultDiv.classList.add("error");
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "Generate";
+            }
         });
-    } catch(err) {
-        alert("Gagal memuat data wilayah. Periksa koneksi atau izin Apps Script.");
-    }
-}
-
-document.getElementById("kecamatan").addEventListener("change", e=>{
-    const selected = e.target.value;
-    const kelSelect = document.getElementById("kelurahan");
-    kelSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
-    wilayahData.filter(w=>w.kecamatan===selected).forEach(w=>{
-        kelSelect.innerHTML += `<option value="${w.kelurahan}">${w.kelurahan}</option>`;
-    });
-});
-
-document.getElementById("generateBtn").addEventListener("click", async ()=>{
-    const nama = document.getElementById("nama").value.trim();
-    const kelurahan = document.getElementById("kelurahan").value.trim();
-    const kecamatan = document.getElementById("kecamatan").value.trim();
-    const resultDiv = document.getElementById("result");
-
-    if(!nama || !kelurahan || !kecamatan){
-        resultDiv.textContent = "Isi semua kolom!";
-        resultDiv.classList.add("error");
-        resultDiv.style.display="block";
-        return;
-    }
-
-    resultDiv.style.display="block";
-    resultDiv.classList.remove("error");
-    resultDiv.textContent="Menghasilkan kode...";
-
-    try {
-        const res = await fetch(`${SCRIPT_URL}?action=generate&nama=${encodeURIComponent(nama)}&kelurahan=${encodeURIComponent(kelurahan)}&kecamatan=${encodeURIComponent(kecamatan)}`);
-        const data = await res.json();
-
-        if(data.status==="success"){
-            resultDiv.textContent = "✅ Kode unik baru: " + data.kode;
-            resultDiv.classList.remove("error");
-        } else if(data.status==="exists"){
-            resultDiv.textContent = "⚠️ Kode sudah ada: " + data.kode;
-            resultDiv.classList.remove("error");
-        } else {
-            resultDiv.textContent = "❌ " + data.message;
-            resultDiv.classList.add("error");
-        }
-    } catch(err){
-        resultDiv.textContent = "❌ Gagal terhubung ke server: " + err.message;
-        resultDiv.classList.add("error");
-    }
-});
-
-loadWilayah();
-</script>
+    </script>
 </body>
 </html>
